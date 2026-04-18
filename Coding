@@ -126,7 +126,5 @@ stages:
    node-build:
     stage: build
     image: node:16
-    scripts:
-     -cd sample-node-app
-      -npm run build
+    
       
