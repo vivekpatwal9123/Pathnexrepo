@@ -1,97 +1,82 @@
- 23 april 
-  
 ---
-- name: Install packages for pathnex
+- name: Install Nginx on Pathnex Server
   hosts: all
   became: yes
 
   tasks:
-   - name: install tools
+   - name: Install nginx
      yum:
-     name:
-      -git
-      -wget
+      name: nginx
       state: present
 
 
 
- terraform
 
- provider "aws {
+
+
+  provider "aws" {
   region = "us-east-1"
- }     
-
- resource "aws_key_pair" "PathnexKey" {
-  key_name = "PathnexKey"
-  public_key = "ssh-rsa-AAA..."
- }
-
- resource "aws_instance" "PathnexEC2" {
-  ami   = "ami-0abcd1234abcd1234"
-  instance_type  + c6i.8xlarge"
-  key_name + aws_key_pair.Pathnexkey.key_name
-
-  tags= {
-    Name = "Pathnex-EC2
   }
+
+resource "aws_instance" "Pathnex_ec2" {
+ ami  = "ami-0123dnkdnc"
+ instance_type = "t2.micro"
+
+
+ tags: {
+   name = "Pathnex_ec2"
+   environment = "dev"
  }
-
- apiVersion: V1
- Kind: Service
- Metadata:
-   Name: Pathnex-service
-spec:
-  selector:
-     app: pathnex-app
-
-  ports:
-  -port: 80
-   targetPort: 80
-
-
-
-
-jenkins pipeline
-
-pipeline{
-  agent any
-  stages{
-    stage('parallel tasks'){
-      parallel{
-        stage('build') {
-          steps {
-            sh 'mvn clean compile'
-          }
-        }
-        stahe('test'){
-          steps{
-            sh 'mvn test'
-
-          }
-        }
-      }
-    }
-  }
 }
 
 
 
+
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+   name: Pathnex-Pod
+
+spec:
+ containers:
+   name: web
+   image: nginx:latest
+   ports:
+    - containerPort: 80  
+
+
+
+    #!/bin/bash
+    echo "Date: $(date)"
+    echo "Hostname: $(hostname)"
+
+
+
+pipeline {
+agents any
+stages{
+   stage('checkout') {
+   steps{
+     git branch: 'main', url ------
+   }
+}
+stage('List Files') {
+steps {
+  sh 'ls -la'
+      }
+     }
+   }
+ }
+
+
 stages:
-- build-test
+ - checkout
 
-maven-build:
-stage: build-test
-image: maven:3.8.1-jdk-17
-script:
--git clone
- -cd sample-java-app
- -mvn clean complie
-parallel: 1
-
-maven-test:
- stage: build-test
- image: maven:3.8.1-jdk-17
+git-checkout:
+ stage: checkout
  script:
- -cd sample-java-app
- - mvn test
- paralllel: 1
+  - git clone 
+  - cd sample-java-app
+  -ls -la
