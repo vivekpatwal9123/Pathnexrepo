@@ -1,82 +1,77 @@
----
-- name: Install Nginx on Pathnex Server
+- name: Install nginx
   hosts: all
-  became: yes
-
-  tasks:
-   - name: Install nginx
+  tasks: 
+   - name: missing
      yum:
       name: nginx
-      state: present
+      state: present 
 
 
 
+      resource "aws_s3" "badbucket" {
+       bucket = pathnex-bucket
+      acl = public-read
 
+      }
+      
+      apiVersion: v1
+      kind: Pod 
+      metadata: 
+       name: brokenpod
 
-
-  provider "aws" {
-  region = "us-east-1"
-  }
-
-resource "aws_instance" "Pathnex_ec2" {
- ami  = "ami-0123dnkdnc"
- instance_type = "t2.micro"
-
-
- tags: {
-   name = "Pathnex_ec2"
-   environment = "dev"
- }
-}
-
-
-
-
-
-
-apiVersion: v1
-kind: Pod
-metadata:
-   name: Pathnex-Pod
-
-spec:
- containers:
-   name: web
-   image: nginx:latest
-   ports:
-    - containerPort: 80  
-
-
-
-    #!/bin/bash
-    echo "Date: $(date)"
-    echo "Hostname: $(hostname)"
+      spec:
+       containers:
+         name: app
+         image: nginx:latest
+         ports:
+          - containerPorts: 80
 
 
 
 pipeline {
 agents any
-stages{
-   stage('checkout') {
-   steps{
-     git branch: 'main', url ------
-   }
-}
-stage('List Files') {
-steps {
-  sh 'ls -la'
-      }
-     }
-   }
+environment {
+ Institute_name = "pathnex"
+
+ team = "devops"
+ ENV = "prod"
  }
+
+ stages {
+ stage ('deploy'){
+  steps{
+  
+     script{
+      try{
+        sh 'echo'
+        sh 'exit
+        '
+      } catch (Exception){
+      
+      echo "deployment failed. Rolling bach"}
+
+      }
+      }
+  
+  }
+ }
+}
 
 
 stages:
- - checkout
+ - deploy
 
-git-checkout:
- stage: checkout
- script:
-  - git clone 
-  - cd sample-java-app
-  -ls -la
+  variables:
+    INSTITUTE_NAME: "pathnex"
+    TEAM ="devops"
+    ENV = "prod"
+
+    deploy:
+      stage: deploy
+      image: alpine:latest
+      script:
+       - echo "deployig $INSTITTUE_NAME app in $ENV for $TEAM"
+       - exit 1
+
+       after_script:
+       - echo "Deploymnet Failed. Roling back $INSTITUTE_NAME app in $ENV"
