@@ -1,0 +1,5 @@
+today 
+I took 3 hour class in morning
+Then i watch linux videos on youtube on Pathnex /diffrent Channels  for 4 hours
+Then i practise linux command on AWS Ec2
+Then i practise code and pushed it to github
