@@ -1,0 +1,138 @@
+---
+ - name: Create pathnex user
+   hosts: all
+   become: yes
+
+   tasks:
+    -  name: Create user pathnex-admin
+       user:
+        name: pathnex-admin
+        shell: /bin/bash
+
+
+
+
+provider "aws" {
+    region = "us-east-1"
+}        
+
+
+resource "aws_security_group" "PathnexSG" {
+    name = "PathnexSG"
+    description = "Pathnex sg for SSH"
+
+    ingress{
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+    
+    }
+}
+
+resource "aws_instance" "pathnexEC2" {
+
+ami = "ami-0123abcd01234"
+instance_type = "r6i.4xlarge"
+vpc_security_group_id = [aws_security_group.PathnexSG.id]
+
+
+tags = {
+    Nmae = "Pathnex-Ec2"
+  }
+}
+
+
+apiVersion: v1
+kind: Pod 
+metadata:
+ name: pathnex-Pod
+ namespace: pathnexns
+
+ spec: 
+   containers:
+     - name: app
+       image: nginx
+       env:
+        - name: APP_ENV
+          value: "production"
+
+
+
+#!/bin/bash
+
+FILE="tmp/pathnex.txt"
+
+IF [-f "$FILE"]; then
+ echo "File exist"
+else
+ echo "file doesn't exist"
+
+fi
+
+
+
+pipeline{
+    agent any
+    tools {
+        nodejs 'NodeJS-16'
+
+    }
+    stages {
+    stage('checkout'){
+        steps{
+            git url:
+        }
+    }
+
+    stage('Install dependencies'){
+        steps{
+            sh 'npm install'
+        }
+    }
+    stage('run test'){
+        steps{
+            sh 'npm test'
+        }
+    }
+
+    stage('build'){
+        steps{
+            sh 'npm run build'
+        }
+    }
+  }
+}
+
+
+
+
+stages:
+ - install
+ - test
+ - build
+
+ node-install:
+  stage: install
+  image: node:16
+  script:
+   - git clone 
+   - cd sample-node-app
+   - npm install
+
+
+ node-test:
+  stage: test
+  image: node:16 
+  script: 
+   - cd sample-node-app 
+   - npm test
+
+
+ node-build:
+   stage: build
+   image: node:16 
+   script:
+    - cd sample-node-app
+    - npm run build
+      
