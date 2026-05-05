@@ -1,0 +1,10 @@
+today 
+first i practise the code and pushed it to the github 
+then i watched the linux videos  and practise the commands 
+then i watch scripting video and practise some shell scripting
+
+
+
+tomorrow 
+i ll practise shell scripting
+practise linux commands
