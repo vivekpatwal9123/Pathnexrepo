@@ -1,0 +1,135 @@
+---
+- name: Install packages for Pathnex using variables
+  hosts: all
+  became: yes
+
+  vars: 
+    pathnex_packages:
+      - tree
+      - unzip
+      - vim
+
+  tasks:
+    - name: Install required packages
+      yum: 
+       name: "{{ Pathnex_packages }}
+       state: present
+
+
+
+   provider "aws" {
+    region = "us-east-1"
+   }    
+
+   resource "aws_vpc" PathnexVPC" {
+     cidr_block = " 10.0.0.0/16"
+
+     tags = {
+        Name = "pathnex-aws_vpc
+        }
+   }
+
+   resource "aws_subnet" "PathnexSubnet" {
+    vpc_id  = aws_vpc.PathnexVPC.vpc_id
+    cidr_block  = "10.10.1.0/24"
+    map_public_ip_on_launch = true
+
+    tags = {
+        Nmae = "Pathnex-Subnet"
+    }
+
+   }
+
+
+   apiVersion: v1
+   kind: Pod
+   metadata:
+    name: pathnex-Pod
+
+   spec:
+    containers:
+     - name: web
+       image: nginx
+       livenessProbe:
+         httpGet:
+           path: /
+           port: 80
+         initialDelaySecounds: 5
+
+
+       readibessProbe:
+         httpGet:
+           path: /
+           port: 80
+         initialDelaySeconds: 3
+
+
+
+
+ #1/bin/bash
+ for item in Pathnex Devops Training; do 
+  echo "Item: $item"
+  done 
+
+
+  pipiline {
+    agents any
+    parameters {
+        string(name: 'Environment', defaultValue: 'dev', description: 'Deployment Environment)
+      }
+      environment {
+        INSTITUE_NAME = "Pathnex"
+      }
+      stages{
+        stage('Checkout') {
+            steps{
+                git branch: 'main', url:
+            }
+        stage('Build') {
+            when{
+                branch 'main'
+
+            }
+            steps{
+                sh 'mvn clean complice'
+
+            }
+        }
+        stage('Deploy') {
+            when{
+                expression { params.RNVIRONMENT == 'dev'}
+
+            }
+            steps {
+                sh 'echo "Deploying tp $ENVIRONMENT by $INSTITUTE_NAME"'
+
+            }
+        }
+
+        }
+      }
+  }
+
+stages:
+ - build
+ - deploy
+
+ build:
+  stage: build
+  image: maven:3.8.1-jdk-17
+  script:
+   - git clone
+   - cd sample-java-app
+   - mvn clean compline
+  only:
+   - main
+
+  deploy:
+   stage: deploy
+   image: alphine:latest
+   scripts:
+    - echo "Deploying to $CI_ENVIRONMENT_NAME by pathnex
+
+   only:
+    variable:
+     - $CI_ENVIRONMENT_NAME == 'dev'  
