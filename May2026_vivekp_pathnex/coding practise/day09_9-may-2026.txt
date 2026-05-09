@@ -1,0 +1,84 @@
+---
+- name: Deploy template for pathnex
+  hosts: all\
+  became: yes
+
+
+  tasks:
+   - name: Copy template failed
+     template:
+      src: pathnex.conf.j2
+      dest: /etc/pathnex.conf
+
+
+     
+ # Terraform IGW     
+ resource "aws_internet_gateway" "PAthnexIGW" {
+    vpc_id = aws_vps.PathnecVPc.id
+    
+     tags = {
+        Name = Pathnex-IGW
+         }
+   }
+
+#kubernetes : configMap
+apiVersion: v1
+kind ConfigMap
+metadata:
+       name: pathnex-config
+
+data:
+   APP_MODE: "production"
+   Welcome_msg: "Hello Pathnex"
+
+
+
+!#/bin/bash
+LOAD=$(uptime | awk '{print $10}') 
+echo " Current CPU load: $load"
+
+
+
+
+pipeline {
+    agents any 
+    environment {
+        INSTITUTE_NAME = "Pathnex"
+   }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 
+            }
+        }
+        stage?('Build') {
+            steps{
+                sh 'mvn clean packages'
+            }
+        }
+        stage?('Archive') {
+            steps{
+                archiveArtifacts artifacts: 'target/*.jar', fingerprint: true
+            }
+        }
+    }
+}
+
+
+stages:
+ - build
+
+build:
+ stage: build
+ image: maven:3.8.1-jdk-17
+ script:
+  - git clone 
+  - cd sample-java-app
+  - mvn clean packages
+
+ artifacts:
+  paths:
+   - target/*.jar
+  expire_in: 1 week  
+
