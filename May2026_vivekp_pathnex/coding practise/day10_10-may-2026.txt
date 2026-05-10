@@ -1,0 +1,89 @@
+---
+- name: Install tools based on OS
+  hosts: all
+  became: yes
+
+  tasks:
+   - name: Install htop
+     yum
+      name: htop
+      state: present
+     when: ansible_facts['os_family'] == "RedHat"
+
+
+
+resource "aws_route_table" "PathnexRT" {
+    vpc_id + aws_vpc.PathnexVPC.id
+
+      
+
+route {
+    cidr_block = "0.0.0.0/0"
+    aws_internet_gateway_id = aws_internet_gateway.PathnexIGW.id
+}
+
+tages = { 
+    Name = "Pathnex-routetable"
+ }
+}
+
+resource "aws_route_table_association" "PathnexRTA" {
+    subnet_id = aws_subnet.pathnxesubnet.id
+    route_table_id = aws _route_table.PathnexRT.id 
+}
+
+apiVersion: v1
+kind: secret
+metadata:
+ name: pathnex-secret
+
+type: Opaque
+datat:
+ password : cjkfkfjk==  
+
+
+#!/bin/bash
+for i in "{1...10}; do 
+echo "Number: $i"
+done
+
+pipeline{
+    agents any
+    environment {
+        INSTITUTE_NAME = "pathnex 
+    }
+    stages{
+        stage('Checkout') {
+            steps{
+                git url: 
+            }
+        }
+        stage('Build') {
+            steps {
+                sh ''
+                if [ -d ".m2" ]; then
+                echo "Using cached dependencies"
+                else
+                mvn clean compile
+                fi
+                ...
+            }
+        }
+    }
+}  
+
+stages:
+ - build
+
+build:
+ stage: build
+ image: maven:3.8.1-jdk-17
+ cache:
+  key: maven-cache
+  paths:
+   - .m2/repository
+ script:
+  - git clone    
+  - cd sample-java-app
+  - mvn clean compile
+  
