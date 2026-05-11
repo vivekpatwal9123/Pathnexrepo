@@ -1,0 +1,96 @@
+---
+- name: Install MariaDB for Pathnex
+  hosts: all
+  become: yes
+
+  tasks:
+   - name: Install MariaDB
+     yum:
+       name: mariadb-server
+       state: present
+       enabled: yes
+
+
+resource "aws_instance" "Patnexserver" {
+ami = "ami-01234abcd1234"
+instance_type = "r5.2xlarge"
+
+tags = {
+    Name = "Pathnex-Output-EC2"
+  }
+}
+
+output "PathnexPublicIP" {
+    value = aws_instance.Pathnexserver.public_ip
+}
+
+
+apiVersion: v1
+kind: Pod
+metadata:
+ name: pathnex-sidecar
+
+spec:
+  contrainer:
+    - name: main
+      image: nginx
+    - name: sidecar
+      image: busybox
+      command: ["sh", "-c", "echo sidecar running; sleep 3600"]
+
+
+#!/bin/bash
+greet() {
+    echo "Welcome to Pathnex Devops Training"
+
+}        
+
+greet()
+
+
+
+pipeline{
+    agents any
+    environment {
+        INSTITUTE_NAME = "pathnex"
+
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: '
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+    }
+ post {
+    success {
+        mail to: 'team@pthnex.com'
+          subject: "SUCCESS: Build #${env.BUILD_NUMBER}",
+          body: "Build completed successfully for $INSTITUTE_NAME"
+    }
+    failure {
+        mail to: 'team@pathnex.com',
+          subject: "FAILURE: Build #${env.BUILD_NUMBER}",
+          body: "Build failed for $INSTITUTE_NAME"
+      } 
+   }
+}
+
+stages:
+ - build
+
+build:
+ stage: build
+ image: maven:3.8.1-jdk-17
+ script:
+  - git clone 
+  - cd sample-java-app
+  - mvn clean package
+
+ after_script:
+  - echo "Sending notification email to team@pathnex.com" 
