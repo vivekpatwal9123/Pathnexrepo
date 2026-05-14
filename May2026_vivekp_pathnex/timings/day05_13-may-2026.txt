@@ -1,0 +1,11 @@
+today 
+i watch youtube videos on eks cluster
+practise making EKS cluster
+ create deployment sets, replicasets, daemon sets
+
+
+ tomorrow 
+ i will create EKS cluster
+ deploy application
+ practise code 
+ watch podcast for communication 

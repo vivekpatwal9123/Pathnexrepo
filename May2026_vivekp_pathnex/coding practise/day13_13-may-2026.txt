@@ -1,0 +1,80 @@
+- name: "Broken"
+  hosts: all
+  tasks:
+   - name: Install
+     yum:
+      name: nginx
+      state: present
+
+
+resource "aws_instance" "BadEC2" {
+ami = ami-123
+instance_type = "c5.large"
+tags = {
+    Name: "Broken"
+}
+
+}
+
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: Broken
+ spec:
+  replicas: 2
+  selectors:
+    matchLabels:
+       app: Broken
+  
+  template:
+   metadata:
+     labels:
+        app: Broken
+  
+    spec: 
+       containers:
+         - name: app
+           image: nginx
+
+
+
+pipeline {
+    agents any 
+    environment {
+        INSTITUTE_NAME = pathnex
+    }
+    matrix {
+        axes {
+            axis {
+                name 'JAVA_VERSION'
+                values '8', '11', '17'
+            }
+        }
+        stages {
+            stage('Build') {
+                steps {
+                    sh "echo Building with java $JAVA_VERSION"
+                }
+            }
+        }
+    }
+}
+
+
+
+stages:
+ - build
+
+
+build:
+ stage: build
+ image: maven:3.8.1-jdk-17
+ parallel:
+   matrix:
+    - JAVA_VERSION: ?['8','11','17']
+ scripts:
+  - echo " Building with java $JAVA_VERSION"
+  
