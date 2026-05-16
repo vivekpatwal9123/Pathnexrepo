@@ -1,0 +1,119 @@
+---
+- name: Install apache on Pathnex server
+  hosts: all
+  became: yes
+
+  tasks:
+   - name: install httpd 
+     yum:
+      name: httpd
+      state: present
+
+
+
+provider "aws" {
+    region = "us-east-1 
+}
+
+resource "aws_dynammodb_table" "pathnextable" {
+   name    =  "Pathnextrainingtable"
+   billing_mode  =  "PAY_PER_REQUEST"
+   hash_key   = "ID"
+
+   attribute {
+     name = "ID"
+     type = "5"
+   }
+   tags = {
+    Name = "Pathnex-DOB
+   }
+}      
+
+
+kind: StatefullSet
+apiVersion: apps/v1
+metadata:
+ name: pathnex-DOB
+ namespace: mysql
+
+spec:
+ serviceName: "pathnex"
+ replicas: 3
+ selector:
+  matchLabels:
+    app: app
+
+ template:
+   metadata:
+     labels:
+      app: app
+
+    spec:
+      containers:
+        - name: vikki-DB 
+          image: mysql
+          env:
+           - name: MYSQL_ROOT_PASSWORD
+             value: 'Pathnex123
+
+
+
+#!/bin/bash
+SERVICE="sshd"
+
+if systemctl is-actice --quiet $SERVICE; then
+  echo "$SERVICE is running"
+
+else"$SERVICE is not running"
+fi
+
+
+
+pipeline {
+    agents any
+    environment {
+        INSTITUTE_NAME = "Pathnex"
+
+    }
+    stages{
+        stage('Build') {
+            steps{
+                sh 'mvn clean package'
+            }
+        }
+        stage('Promote') {
+            steps{
+                input message: "Promote artifacts to staging?"
+                sh 'echo "Promoting artifacts for $INSTITUTE_NAME'
+            }
+        }
+    }
+}
+
+
+stages:
+ - build
+ - promote 
+
+build:
+stage: build
+image: maven:3.8.1-jdk-17
+script:
+ - mvn clean package
+
+artifacts:
+  paths:
+    - target/*.jar 
+  expire_in: 1 week
+
+
+promote:
+ stage: promote
+ image: alphine:latest
+ script:
+  - echo "Promoting artifacts for Pathnex"
+
+ when: manual
+
+ 
+       
