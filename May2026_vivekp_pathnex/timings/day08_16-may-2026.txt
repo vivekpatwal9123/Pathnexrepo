@@ -1,0 +1,12 @@
+today
+i created ns and statefull set , service 
+practise code 
+create eks cluster and troubleshoot
+watch youtube videos on kubernetes
+
+
+tomorrow
+practise code
+practise creating eks cluster 
+practise helm charts 
+watch youtube videos on k8s helm and helm charts
