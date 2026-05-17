@@ -1,0 +1,12 @@
+today
+i created eks cluster
+learn about taint and tolerance , affinity 
+watch youtube videos
+practise code 
+
+
+tomorrow 
+learn about helm 
+practise on eks cluster and its upgradation
+practise code '
+watch youtube videos
