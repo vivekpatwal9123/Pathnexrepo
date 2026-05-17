@@ -1,0 +1,14 @@
+
+
+ today 
+ i  created EKS cluster 
+ deploy application on eks cluster and using ingress for load balancer
+ practise code 
+ watch podcast for communication 
+
+
+ tomorrow
+i watch youtube videos on helm charts
+practise making EKS cluster and deployapp using helm
+ create deployment sets, replicasets, daemon sets
+ practise code 
