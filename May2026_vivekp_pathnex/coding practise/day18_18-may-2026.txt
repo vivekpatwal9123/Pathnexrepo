@@ -1,0 +1,105 @@
+---
+- name: Show system facts for Pathnex
+  hosts: all
+
+  tasks:
+   - name: Print OS info
+     debug:
+      var: ansible_fact['os_family']
+
+   - name: Print IP address
+     debug:
+      var: ansible_facts['default_ipv4']['address']
+
+
+
+
+variable "instance_type" {
+    default = "c6a.12xlarge"
+}         
+
+resource "aws_instance" "PathnexServer" {
+    ami = "ami-01234abcd1234"
+    instance_type = var.instance_type
+
+
+}   
+
+
+
+output "pathnex_public_ip" {
+    value = aws_instance.PathnexServer.public_ip
+}
+
+
+apiVersion: v1
+kind: pod
+metadata:
+ name: pathnex-affinity
+
+spec:
+ affinity:
+  nodeAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      nodeSelectorTerms:
+        - matchExpressions:
+            - key: disktype
+              operator: In 
+              Values:
+                - ssd
+
+  containers:
+   - name: web
+     image: nginx
+
+
+
+#!/bin/bash
+
+tar -czf /backup/pathnex-logs-$(date +%F).tar.gz /var/log/
+echo "Logs archived"
+
+
+
+
+pipeline {
+    agent any 
+    environment {
+        INSTITUTE_NAME = "Pathnec"
+    }
+    stages{
+        stage('Deploy'){
+        steps{
+            script{
+                try {
+                    sh 'echo "Deploying $INSTITUTE_NAME application.."'
+                    sh 'exit 1' // simulate failure
+
+                } catch (Exception e ) {
+                    echo "Deployment failed. Rolling back $INSTITUTE_NAME applications.."
+                }
+            }
+        }
+
+        }
+        }
+    }
+
+
+
+
+stages:
+ - deploy 
+
+ deploy:
+ stage: deploy
+ image: alphine:latest
+ script:
+  - echo "Deploying $INSTITUTE_NAME applications.."
+  - exit 1
+
+ after_script:
+  - echi "Deployment f ailed. Rolling back $INSTITUTE_NAME application..."
+
+  
+   
