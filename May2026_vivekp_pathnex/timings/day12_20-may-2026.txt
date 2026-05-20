@@ -1,0 +1,11 @@
+today
+create eks cluster and intsall argo cd  then pull changes from git to cluster
+watch youtube video on ARGO cd
+practise code
+
+
+
+tomorrow
+watch youtube videos on terraform
+practise code 
+practise terraform code 
