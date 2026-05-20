@@ -1,0 +1,192 @@
+provider "aws" {
+    region = "ap-south -1"
+
+}
+
+
+resource "aws_vpc" "myvpc" {
+    cidr_block =  "10.0.0.0/16"
+    enable_dns_support  = true
+    enable_dns_hostname = true
+
+    tags = {
+        Name = myvpc
+    }
+}
+
+resource "aws_igw" "myigw" {
+    vpc_id = aws_vpc.myvpc.vpc_id
+    tags = {
+        myigw
+    }
+}
+
+resource "aws_subnet" "public_subnet" {
+    vpc_id   = aws_vpc.myvpc.id
+    cidr_block = "10.0.1.0/24"
+    availabilty_zone  = "us-east-1a"
+    map_public_ip_on_launch  = true
+    tags = {
+        Name = "terraform-public-subnet"
+
+    }
+}
+
+resource "aws_route_table" "public_rt" {
+    vpc_id = aws_vpc.myvpc.id
+
+    route {
+        cidr_block  = "0.0.0.0/0"
+        gateway_id = aws_igw.myigw.id
+   }
+   tags = {
+    Name =  my-public-rt 
+   }
+}
+
+
+resource "aws_route_table_association" "rt_assopciation" {
+    subnet_id  = aws_subnet.pubic_subnet.id
+    route_table_id = aws_route_table.public_rt.id
+}
+
+
+resource "aws_sg" "mysg" {
+    name = "my-security-group"
+    vpc_id  = aws_vpc.myvpc.id
+
+    ingress {
+        from_port = 22
+        to_port  = 22
+        protocol = tcp
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks  = ["0.0.0.0/0"]
+    }
+    tags = {
+        Name = "my-sg"
+
+    }
+}
+
+
+resource "aws_instance" "my-ec2" {
+    ami = " ami-01234abxcd012334
+    instance_type =  c5.xlarge
+    subnet_id = aws_subnet.public_subnet.id
+    vpc_security_group_ids = [aws_sg.mysg.id]
+    key_name = aws_key
+
+tags = {
+    name = ec2_i
+ }
+}
+
+
+
+
+---
+- name: Install and configure Nginx
+  hosts: web
+  became: yes
+
+  tasks:
+   - name: Install nginx
+     yum:
+      name: nginx
+      state: present
+
+
+   - name: Start Nginx Service
+     service:
+      name: nginx
+      state: started
+      enabled: yes
+
+    - name: copy HTML file 
+      copy:
+       src: idex.htmt
+       dest: /urs/share/nginx/html/index.html
+
+
+
+
+
+ kind: Deploymnet
+ apiVersion: apps/v1
+ metadata:
+  name: my-Deploymnet
+  namespace: nginx
+
+ spec:
+  replicas: 2
+  selectors:
+   matchLabels:
+     app: myapp
+  template:
+    lables:
+     app: myapp
+
+    spec:
+      containers:
+       - name: my-containers
+         image: nginx
+         ports:
+          - containerPort: 80
+
+
+kind: Service
+apiVersion: v1
+metadata:
+ name: myservice
+spec:
+ selector:
+  app: myapp
+ ports:
+  -  protocol: tcp
+     port: 80
+     target: 80
+ type: ClusterIP
+
+
+
+ pipeline {
+    agents any
+    environment {
+        INSTITUTE_NAME ="Pathnex"
+    }
+    triggers {
+        cron('h2****')
+    }
+    stages{
+        stage('Checkout') {
+            steps{
+                git url: 'https://github.com/Pathnex/sample-java-app.git
+            }
+        }
+        stage('Build') {
+            steps{
+                sh ,mvn clean package'
+            }
+        }
+    }
+ }
+
+
+ stages:
+  - build
+ 
+ build:
+  stage: build
+  image: maven:3.8.1-jdk-17 
+
+  script:
+   - git clone  https://github.com/Pathnex/sample-java-app.git 
+   - cd sample-java-app
+   - mvn clean package
+
+   

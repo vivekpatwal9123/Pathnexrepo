@@ -1,0 +1,13 @@
+today 
+watch videos on kubernetes
+watch podcast for communication
+practise code and push it to github
+make eks cluster and make deploymnet,replicaset,daemon.statefull,
+
+
+
+tomorrow
+ practise code 
+ and make deploymnet,service,pvc,pvc and deploy the application
+ read newspaper and books for speaking skill
+ watch video on kuberentes
