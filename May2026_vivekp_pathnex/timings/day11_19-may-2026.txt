@@ -1,0 +1,14 @@
+today
+
+create eks cluster and practise upgrade 
+practise helm and deploy app using helm
+practise code
+watch youtubevideo
+
+
+tomorrow
+ watch yt videos on ARGO cd 
+ practise installing argo cd
+ practise code
+ revise K8S
+ 
