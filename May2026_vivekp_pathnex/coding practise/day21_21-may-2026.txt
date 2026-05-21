@@ -1,0 +1,120 @@
+---
+- name: Install nginx on Pathnex Server
+  hosts: all
+  became: yes
+
+  tasks:
+   - name: Install nginx
+     yum:
+      name: nginx
+      state: present
+
+
+
+provider "aws" {
+    region = "us-east-1"
+}      
+
+resource "aws_instance" "myec2" {
+    ami  = "ami-0abccd1234abcd"
+    instance_type = c5.xlarge
+
+    tags = {
+        Name =  Pathnex
+        Owner = PathnexStudent
+    }
+}
+
+
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: nginx-Deployment
+ namespace: nginx
+
+spec:
+ replicas: 3
+ selector:
+  matchLables:
+    app: vik
+
+ template:
+   metadata:
+    labels:
+     app: vik
+
+
+   spec:
+      containers:
+       - name: container-nginx
+         image: nginx
+         ports:
+           - containerPorts: 80
+
+
+
+ #!/bin/bash
+ echo 'Date = $(date)
+ echo 'uptime = $(uptime) '
+ echo "disk space:"  
+ df -h       
+
+pipeline {
+    agents any
+    environment {
+        INSTITUTE_NAME = "Pathnex"
+
+    }
+    stages{
+      stage(Deploy to Dev') {
+        steps{
+            sh ' echo "Deploying $INSTIUTUTE_NAME to Dev environment"'
+        }
+      }
+      stage ('Deply to Staging) {
+        steps {
+            input message: "Approve Staging Deployment?"
+            sh 'echo "Deploying $INSTITUTE_NAME to Staging environment"'
+        }
+      }
+
+      stage('Deploy to Prod') {
+        steps {
+            input message: "Approve prod Deployment?"
+            sh 'echo "Deploying $INSTITUTE_NAME to Prod environment"'
+        }
+      }
+    }
+}
+
+
+
+
+
+
+stages:
+ - deploy 
+variables:
+ INSTITUTE_NAME = "Pathnex"
+
+deploy:
+stage: deploy
+image: alpine:latest
+script:
+ - echo "Deploying $INSTITUTE_NAME to Dev environment"
+
+deploy-staging:
+ stage: deploy
+ image: alpine:latest
+ script:
+  - echo "Deploying $INSTITUTE_NAME to Staging environmnet"
+when: manual
+
+
+deploy-prod:
+ stage: deploy
+ image: alpine:latest
+ script:
+  - echo "Deploying $INSTUITITE_NAME to Prod environment"
+when: manual
