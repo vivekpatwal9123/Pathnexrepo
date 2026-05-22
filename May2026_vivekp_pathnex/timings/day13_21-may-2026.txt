@@ -1,0 +1,11 @@
+today
+watch previous month videos 
+create ec2 instance using terraform
+practise code
+
+
+tomorrow
+
+watch videos
+practise code
+create server ,storage,networks using terraform
