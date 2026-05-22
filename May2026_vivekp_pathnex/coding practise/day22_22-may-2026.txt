@@ -1,0 +1,141 @@
+---
+- name: Deploy Nginx across multiple kubernetes cluster
+  hosts: localhost
+  tasks:
+   - name: Config kubectl for cluster 1
+     command: kubectl config use-context  us-east-cluster
+
+   - name: DeployNginx on cluster 1
+     command: kubectl apply -f kubernetes/deployment.yaml
+
+   - name: Configure kubectl for cluster 2
+     command: kubectl config use-context us-west-cluster
+
+   - name: Deploy Nginx on cluster 2
+     command: kubectl apply -f kubernetes/deployment.yaml
+
+
+
+
+resource "aws_eks_cluster" "pathnex_eks" {
+    name = "pathnex-eks-cluster"
+    role_arn = aws_iam_role.eks_cluster_role.arn 
+    vpc_conifg {
+        subnet_ids = [aws_subnet.pathnex_subnet.id]
+    }
+    depends_on = [aws_iam_role_policy_attchment.eks_cluster_role_policy]
+}
+
+
+reource "google_container_cluster "pathnex_gke" {
+    name = "pathnex-gka-cluster"
+    location = "us-central-a"
+    initial_node_count = 3
+    node_config {
+        machine_type = "n1-standard-1"
+    }
+}
+
+
+
+apiVersion: apps/v1
+kind: deployment 
+metadata:
+ name: pathnex-deployment
+
+spec:
+ replicas: 3
+ selector:
+  matchLabels:
+   app: pathnex-app
+
+ template:
+   metadata:
+    labels:
+     app: pathnex-app
+
+   spec:
+    containers:
+     - name: Nginx 
+       image: nginx 
+       ports:
+        - containerPort: 80
+
+
+apiVersion: federation.k8s.io/v1beta1
+kind: FederationDeployment 
+metadata:
+ name: pathnex-federated-deployment
+ namespace: default
+
+spec:
+ template:
+  spec:
+   replicas: 3
+   selector:
+     matchLabels:
+      app: pathnex-app
+
+   template:
+     metadata:
+      labels:
+       app: pathnex-app
+
+     spec:
+      containers:
+       - name: nginx
+         image: nginx
+         ports:
+          - containerPorts: 80
+
+
+          pipeline {
+            agent any 
+            stages{
+                stage?('Deploy to Cluster 1') {
+                    steps {
+                        script {
+                            'kubectl --context=us-east-cluster apply -f kubernetes/deployment.yaml'
+                        }
+                    }
+                }
+                stage('Deploy to Cluster2') {
+                    steps{
+                        script {
+                            sh 'kubectl --context=us-west-cluster apply -f kubernetes/deployment.yaml'
+                        }
+                    }
+                }
+            }
+          }
+
+
+
+
+stages:
+ - deploy 
+
+deploy_cluster_1:
+ stage: deploy
+ script:
+  - kubectl --context=us-east-cluster apply -f  kuberenetes/deployment.yaml
+
+ deploy_cluster_2:
+  stage: deploy
+  script:
+   - kubectl --context=us-west-cluster apply -f kubernetes/deployment.yaml  
+
+
+
+
+ version: '3'
+ services:
+  db:
+   image: mysql:8
+   container_name: pathnex-db
+   environment:
+    MYSQL_ROOT_PASSWORD: root 
+
+  web:
+   image: nginx
+   container_name: Pathnex-web      

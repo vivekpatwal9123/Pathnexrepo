@@ -1,0 +1,10 @@
+today
+create ec2 and use modules 
+practise code
+watch videos
+
+
+tomorrow
+watch youtube videos on ansible
+practise code
+practise ansible code
