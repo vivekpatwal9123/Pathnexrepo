@@ -1,0 +1,13 @@
+today
+
+watch previous month video
+create 3 servers and deploy nginx using ansible
+practise code 
+create servers using terraform
+
+
+tomorrow
+practsie code
+create server using terraform and deploy software using ansible
+watch previous month video on ansible
+revise kubernetes

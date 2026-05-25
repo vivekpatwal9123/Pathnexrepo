@@ -1,0 +1,11 @@
+today 
+practise ansible
+practise code
+practsie terraform
+
+
+tomorrow
+
+watch youtubevideos on Jenkins
+practsie CI/CD
+practise code
