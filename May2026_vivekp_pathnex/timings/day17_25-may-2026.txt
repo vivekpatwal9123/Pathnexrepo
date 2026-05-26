@@ -1,0 +1,11 @@
+today
+watch yt videos on CI/CD 
+practise code 
+deploy Jenkins and then deploy CI/CD pipeline 
+
+
+
+tomorrow
+watch yt videos on gitlab CI
+practise code
+deploy app on gitlab CI
