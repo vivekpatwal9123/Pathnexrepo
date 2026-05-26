@@ -1,0 +1,10 @@
+today 
+watch previous month yt videos
+use monitoring tools datadog .prometheus,grafana
+create dashboard ,set alrets alarm
+
+
+tomorrow
+watch youtube videos
+use another monitoring tools 
+practise code 
