@@ -1,0 +1,9 @@
+today 
+i used elk for log management 
+practise code 
+watch old videos on youtube
+
+tomorrow
+watch videos on kafka 
+practise code
+prcatise monitoring tools
