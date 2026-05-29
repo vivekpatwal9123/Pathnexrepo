@@ -1,0 +1,11 @@
+today 
+today i used elk stack on k8s
+watch video on kafka 
+practise code 
+
+
+
+tomorrow
+practise code 
+watch youtube videos 
+revise ci/cd pipelines
