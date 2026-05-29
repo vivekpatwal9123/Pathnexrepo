@@ -1,0 +1,9 @@
+today 
+watch videos on youtube 
+create ssl certificate 
+practise code
+
+tomorrow
+watch videos on youtube
+practise code 
+practise CICD
