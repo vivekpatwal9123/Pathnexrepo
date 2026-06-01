@@ -1,0 +1,8 @@
+today 
+watch videos on docker linus 
+practise code
+
+tomorrow
+git 
+shell scrpting
+docker
