@@ -1,0 +1,73 @@
+---
+- name: Install Nginx on Pathnex server
+  hosts: all
+  became: yes
+  tasks: 
+  - name: Install Nginx
+    yum:
+     name: Nginx
+     state: present
+
+
+    provider "aws" {
+        region = "us-east-1"
+    } 
+
+    resource "aws_instance" "Pathnex-ec2" {
+        ami  = "ami-xxxxxxxxx"
+        instance_type = "t2.micro"
+
+        tags = {
+            Name  = "Pathnex"
+
+        }
+    }
+
+
+
+apiVersion: apps/v1
+kind: Pod
+metadata:
+ name: pathnex-Pod
+
+spec:
+ containers:
+  - name: web
+    image: nginx:latest
+    ports: 
+     - contaiinerPort: 80
+
+
+#!/bin/bash
+
+echo "Date: $(date)"
+echo "Hostname: $(hostname)"
+
+
+pipeline {
+    agents any 
+    stages{
+        stage('Checkout') {
+            steps {
+                git branch: "main", url: 'https//github.com/pathnexc/'
+            }
+        }
+        stage('list Files') {
+            steps {
+                sh 'ls-la'
+            }
+        }
+    }
+}
+
+
+
+stages:
+ - Checkout
+
+git-checkout:
+ stage: checkout
+script:
+ - git clone https://github.com/pathnex'
+ - cd sample-java-app 
+ - ls -la
