@@ -1,0 +1,87 @@
+---
+- name: Install nginx on Pathnex Server
+  hosts: all
+  become: yes
+
+  tasks:
+   - name: Install nginx
+     yum: 
+      name: nginx
+      state: present
+
+
+
+
+ resource "aws_s3_bucket" "vikki_bucket" {
+    bucket = "vikki-bucket"
+
+    tags = {
+        Name = "Vivek"
+        env = "dev"
+
+    }
+  
+    
+
+ }     
+
+
+
+ apiVersion: apps/v1
+ kind: Statefulset
+ metadata:
+  name: pathnex-set
+  namespace: mongodb
+
+spec:
+ serviceName: mongobd-service
+ replicas: 3
+ selector:
+  matchLabels:
+   app: vikki
+
+ template:
+  metadata:
+   labels:
+    app: vikki
+
+  spec:
+   containers:
+    - name: mongodb-container
+      image: mongodb
+      ports:
+       - containerPort: 27017
+
+   volumeMounts:
+      name: my-volume
+      mountPath: /data/db
+
+   volumeClaimTemplate:
+   metadata:
+       name: my-volume
+
+    accessModes:
+     - ReadWriteMany
+
+    resource:
+     request:
+       storage: 1Gi 
+            
+
+Pipeline {
+    agent any
+    stages{
+
+    
+     stages('Checkout') {
+        steps {
+            git branch: 'main', url: 'http//www.github/vivekpatwal/v-git'
+        }
+    }
+     stages('Build') {
+        steps {
+            sh 'mvn clean package'
+        }
+    }
+}
+}

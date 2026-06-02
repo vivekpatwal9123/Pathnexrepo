@@ -1,0 +1,148 @@
+---
+- name: Intsall nginx on Pathnex server
+  hosts: all
+  become: yes
+
+  tasks:
+   - name: Install nginx
+     yum:
+      name: nginx
+      state: present 
+
+   - name: Service start
+     service:
+       name: nginx
+       state: started
+       enabled: yes
+
+   - name: Copy file
+     copy:
+       src: index.html
+       dest: /usr/share/nginx/html/index.html
+
+   - name: Create file
+     file:
+       path: devop.txt
+       state: touch
+
+
+
+
+ resource "aws_key_pair" "vivek_key" {
+    key_name  = "vivek-key"
+    public_key = file("joyboy.pub")
+ }            
+
+ resource "aws_default_vpc" "default_vpc" {
+
+ }
+
+ resource "aws_security_group" "vivek_sg" {
+    name = "vivek-sg"
+    vpc_id = aws_default_vpc.default_vpc.id 
+    ingress {
+        from_port = 22
+        to_port = 22
+        protocol = "tcp"
+        cidr_blocks = ["0.0.0.0/0"]
+
+    }
+    egress {
+        from_port = 0
+        to_port = 0
+        protocol = "-1"
+        cidr_blocks = ["0.0.0.0/0"]
+    }
+ }
+
+
+ resource "aws_instance" "vivek_instance" {
+      key_name = aws_key_pair.vivek_key.key_name
+      vpc_security_group_ids = [aws_security_group.vivek_sg.id]
+      ami = "ami-0113shduibd"
+      instance_type = "c7i-flex.large"
+
+      root_block_device {
+        volume_size = 20
+        volume_type = "gp3"
+      }
+
+      tags = {
+        Name = "vivek"
+        Env = "dev" }
+ }
+ 
+ 
+ }
+
+
+
+
+ apiVersion: apps/v1
+ kind: Deployment
+ metadata:
+  name: pathnex-deployment 
+  namespace: nginx-pathnex 
+
+ spec:
+  replicas: 3
+  selector:
+   matchLables:
+    app: vikki
+
+  template:
+   metadata:
+    labels:
+     app: vikki
+
+  spec:
+   containers:
+    - name: vikki-container 
+      image: nginx
+      ports: 
+       - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service 
+metadata: 
+ name: pathnex-service
+ namespace: nginx-pathnex
+
+spec:
+ selector:
+  app: vikki
+
+ type: LoadBalancer
+
+ ports:
+  port: 80
+  targetPort: 80
+  protocol: TCP
+
+
+
+
+
+pipeline {
+    agent any 
+    environment {
+        INSTITUTE_NAME = "pathnex"
+
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: "main", url: 'gggggggggggg'
+            }
+
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn clean complie'
+            }
+        }
+   }
+}
+
+
