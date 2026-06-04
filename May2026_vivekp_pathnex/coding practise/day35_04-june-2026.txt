@@ -1,0 +1,92 @@
+---
+- name: Install packages for nginx
+  hosts: all
+  become: yes
+
+  tasks:
+   - name: Install tools
+     yum:
+      name:
+       - git
+       - wget
+      state: present
+
+
+
+provider "aws" {
+    region = "us-east-1
+}      
+
+resource "aws_key_pair" "pathnexKey" {
+    key_name   = "PathnexKey"
+    public_key = "ssh-rsajj"
+}
+
+resource "aws_instance" "Pathnexec2" {
+    ami = "ami-ohdxxxxxx"
+    instance_type  = "c6i.8xlarge"
+    key_name   = aws_key_pair.pathnexKey.key_name 
+    tags  = {
+        Name  = "Pathnex-ec2"
+    }
+}
+
+
+
+apiVersion: v1
+kind: Service 
+metadata:
+ name: pathnex-Service
+
+spec:
+ selector:
+   app: pathnex-app
+
+ type: ClusterIP
+
+ ports:
+  - protocol: "tcp"
+    port: 80
+    targetPort: 80  
+
+pipeline {
+    agent any
+    stages {
+        stage('Parallel Tasks') {
+            parallel {
+                stage('Build') {
+                    steps {
+                        sh 'mvn clean compile'
+                    }
+                }
+                stage('Test') {
+                    steps {
+                        sh 'mvn test'
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+stages:
+ - build-test
+
+maven-build:
+ stage: build-test
+ image: maven:3.8.1-jdk-17
+ script:
+   - git clone https://github.com/pathnex/sample-java-app.git
+   - cd sample-java-app
+   - mvn clean compile
+
+ parallel: 1
+
+ maven-test:
+  stage: build-test
+  image: maven:3.8.1-jdk-17
+  script:
+   - cd sample-java-app
+   - mvn test
+  parallel: 1 
