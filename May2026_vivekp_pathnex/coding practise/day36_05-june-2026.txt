@@ -1,0 +1,94 @@
+---
+- name: Manage nginx
+  hosts: all
+  become: yes
+
+  tasks:
+   - name: Update config file
+     copy:
+      src: index.html
+      dest: /usr/share/nginx/html/index.html
+
+     notify: Restart nginx
+
+  handlers:
+    - name: Restart nginx
+      service:
+        name: nginx
+        state: restarted
+
+
+resource "aws_instance" "PathnexEC2" {
+    ami  = "ami-0xxxxxxxxxxx"
+    instance_type   = "c6a.12xlarge"
+ 
+  user_data  = <<EOF
+   #!/bin/bash
+   yum install -y httpd
+   systemctl start htppd
+   EOF
+
+   tags  = {
+    Name   = "Pathnex-EC2"
+   }
+
+}        
+
+
+apiVersion: v1
+kind: Pod 
+metadata: 
+ name: pathnex-limited-Pod
+
+spec: 
+ containers:
+  - name: app 
+    image: nginx
+    resources:
+      limits:
+        memory: "256Mi"
+        cpu: "500m"
+
+
+
+pipeline {
+    agent any 
+    environment {
+        INSTITUTE_NAME = "pathnex"
+
+    }
+    stages {
+        stage('Print') {
+            steps {
+                sh 'echo "welcome to $INSTITUTE_NAME devOps Training"'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn clean package -Dinstitute.name=$INSTITUTE_NAME'
+            }
+        }
+    }
+}
+
+
+
+
+stages: 
+ - build
+
+variables:
+  INSTITUTE_NAME: "Pathnex"
+
+build:
+  stage: build
+  image: maven:3.8.1-jdk-17
+  
+  scripts:
+   - git clone hhtps://github.com/pathnex/sample-java-app.git
+   - cd sample-java-app
+   - echo "Welcome to $INSTITUTE_NAME devOps Training"
+   - mvn clean package -Dinstitute.name=$INSTITUTE_NAME
+
+
+
