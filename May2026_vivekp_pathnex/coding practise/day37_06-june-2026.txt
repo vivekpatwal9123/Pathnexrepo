@@ -1,0 +1,80 @@
+---
+- name: Install nginx
+  hosts: all
+  become: yes
+
+  tasks:
+   name: Install nginx
+   yum:
+    name: nginx
+    state: present
+
+
+
+resource "aws_instance" "BrokenEC2" {
+    ami = "ami-xxxxxx"
+    instance_type  = "t2.micro"
+
+    tags  = {
+        Name = "Broken"
+        env = "prod"
+        owner  = "student"
+    }
+}
+
+apiVersion: v1
+kind: Pod
+metadata:
+ name: pathnex
+
+spec: 
+ container:
+  - name: pathnex-container
+    image: nginx
+    ports:
+     - containerPort: 80
+
+
+pipeline {
+    agent any
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: 'main', url: 'https://github.com/pathnex/sample-java-app.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh '''
+                mvn clean compile || { echo "Compile failed"; exit 1;} 
+                '''
+            }
+        }
+        stage('Test') {
+            steps {
+                sh '''
+                 mvn test || {echo "tests failed"; exit 1;}
+            }
+        }
+    }
+}     
+
+
+
+stages:
+ - build 
+ - test 
+
+build:
+  stage: build
+  image: maven:3.8.1-jdk-17
+  script:
+   - git clone https://xxxx'
+   - cd sample-java-app
+   - mvn clean compile || {echo "Compile failed"; exit 1;}
+test:
+  stage: test
+  image: maven:3.8.1-jdk-17
+  script:
+   - cd sample-java-app
+   - mvn test || { echo "Test failed; exit 1 ;}
