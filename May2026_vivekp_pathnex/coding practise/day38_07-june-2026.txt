@@ -1,0 +1,66 @@
+---
+- name: Install nginx
+  hosts: all
+  become: yes
+
+  tasks:
+   name: install nginx
+   yum:
+    name: nginx
+    state: present
+
+
+
+provider "aws" {
+    region = "us-east-1" 
+}
+
+resource "aws_instance" "PathnexEC2" {
+    ami  = "ami-xxxxxxxxxx"
+    instance_type  = "t2.micro"
+
+    tags = {
+        Name = Vivek
+        env = dev
+    }
+}
+
+
+
+pipeline {
+    agent any
+    parameters {
+        string(name: 'ENVIRONMENT', defaultValue: 'dev', description: 'Deployment Environment')
+    }
+    environment {
+        INSTITUTE_NAME = "Pathnex"
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/Pathnex/sample-java-app.git'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh 'echo "Deploying to $ENVIRONMENT by &INSTITUE_NAME"'
+            }
+        }
+    }
+
+}
+
+stages:
+ - Deploy
+
+
+variables:
+  INSTITUTE_NAME: "pathnex"
+  ENVIRONMENT: "dev"
+
+deploy:
+  stage: deploy
+  image: alphine:latest
+
+  scripts:
+   - echo "Deploying to $ENVIRONMENT by $INSTITUTE_NAME"  
