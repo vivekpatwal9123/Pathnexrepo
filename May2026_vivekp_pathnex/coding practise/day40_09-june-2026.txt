@@ -1,0 +1,79 @@
+--- 
+- name: Deploy template for pathmex
+  hosts: all
+  become: yes
+
+  tasks:
+   - name: Copy template file
+     template:
+       src: pathnex.conf.j2
+       dest: /etc/pathnex.conf
+
+
+resource "aws_internet_gateway" "PathnexIGW" {
+    vpc_id  = aws_vpc.PathnexVPC.id 
+
+    tags  = {
+        Name  = "Pathnex-IGW"
+    }
+}
+
+
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+ name: pathnex-config
+data:
+ APP_MODE: "production"
+ Welcome_MSG: "Hello pathnex"
+
+
+
+ #!/bin/bash
+LOAD=$(uptime | aws '{print $10}')
+echo "Current CPU load: $LOAD"
+
+
+pipeline {
+    agent nay 
+    environment {
+        INSTITUTE_NAME  = "Pathnex"
+
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'htps/github.com/pathnex/sample-java-app.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+        stage('Archive') {
+            steps  {
+                archiveArtifacts artifacts: 'target/*.jar, fingerprint: true
+            }
+        }
+    }
+}
+
+
+
+stages:
+ - build
+
+build:
+ stage: build
+ image: maven:3.8.1-jdk-17 
+ script:
+  - git clone https://github.com/pathnex/sample-java-app.git
+  - cd sample-java-app
+  - mvn clean package 
+
+ artifacts:
+  paths:
+    - target/*.jar
+  expire_in: 1 week   
