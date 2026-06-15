@@ -1,0 +1,130 @@
+resource "aws_vpc" "my_vpc" {
+    cidr_block = "10.0.1.0/16"
+}
+
+resource "aws_subnet" "my_subnet" {
+    vpc_id = aws_vpc.my_vpc.id  
+    cidr_block  = "10.0.1.0/24"
+
+    }
+
+resource "aws_internet_gateway" "my_igw" {
+    vpc_id = aws_vpc.my_vpc.id
+}
+
+resource "aws_route_table" "my_table" {
+    vpc_id = aws_vpc.my_vpc.id  
+     
+     route  {
+       cidr_block = "0.0.0.0/0"
+       gateway_id  = aws_internet_gateway.my-igw.id
+     }
+}    
+
+
+resource "aws_route_table_association" "my_association" {
+    subnet_id = aws_subnet.my_subnet.id
+    route_table_id  = aws_route_table.my_table.id
+}
+
+
+
+apiVersion: apps/v1
+kind: Deployment 
+metadata: 
+  name: pathnex-deployment 
+
+spec: 
+ replicas: 2
+ selector:
+  matchLabels:
+    app: vikki
+
+ template:
+   metadata:
+    labels:
+     app: vikki 
+
+
+   spec:
+    containers:
+     - name: web
+       image: nginx
+       ports:
+        - containerPort: 80 
+
+---
+apiVersion: v1
+kind: Service 
+metadata:
+ name: pathnex-Service
+
+spec:
+ type: ClusterIP
+ selector:
+  app: vikki 
+ ports:
+  protocol: TCP
+  port: 80
+  targetPort: 80
+
+
+
+---
+ - name: Install nginx
+   hosts: all
+   become: yes
+
+   tasks: 
+    - name: install nginx
+      yum:
+       name: nginx
+       state: present 
+
+      name: Deploy HTML file
+      copy:
+       src: index.html 
+       dest: /usr/share/nginx/html/index.html
+
+CPU: $(top | grep "cpu")
+Memory: $(free -h)
+Disk: $(df -h)
+
+
+
+pipeline {
+    agent any 
+    environment {
+        INSTITUTE_NAME = "Pathnex"
+
+    }
+    triggers {
+        cron('H 2 * * *') //everyday at 2 am 
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/pathnex/sample-java-app.git'
+            }
+        }
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+    }
+}
+
+
+
+
+stages: 
+ - build 
+
+build:
+ stage: build 
+ image: maven:3.8.1-jdk-17
+ script:
+  - git clone 
+  - cd sample-java-app
+  - mvn clean package  
