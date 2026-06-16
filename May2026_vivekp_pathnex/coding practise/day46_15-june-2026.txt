@@ -1,0 +1,113 @@
+---
+- name: Install Java on pathnex server 
+  hosts: all
+  become: yes
+
+  tasks:
+   - name: install java 
+     yum:
+      name: java-11-openjdk
+      state: present 
+
+   - name: Set java_home
+     lineinfile:
+        path: /etc/profile
+        line: 'export JAVA_HOME=/usr/lib/jvm/java/java-11-openjdk'
+
+
+
+provider "aws" {
+    region  = "us-east-1" 
+}        
+
+resource "aws_bucket" "PathnexBucket" {
+    bucket  = "pathnex-devops-buvket"
+
+    tags  = {
+        Name = "PathnexBucket"
+    }
+}
+
+
+
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+ name: pathnex-cron
+
+spec:
+ schedule: "*/5 * * * *"
+ JobTemplate:
+  spec:
+    template:
+      metadata:
+         labels:
+          app: vikki
+      spec: 
+       containers:
+         - name: web
+           image: busybox
+           command: ["sh", "-c", "echo pathnex CronJob running"]
+       restartPoilicy: Faliure
+
+
+  #!/bin/bash 
+
+  FILE='/etc/passwd"         
+
+  while read line; do 
+   echo "Line: $line"
+   done < $FILE 
+
+
+
+
+pipeline {
+    agent any 
+    environment {
+        INSTITUTE_NAME = "Pathnex"
+        SLACK_CHANNEL = "#devops" 
+    }
+    stages {
+        stage('checkout') {
+            steps {
+                git url: 'https/github.com/pathnex/sample-java-app.git'
+            }
+
+        }   
+        stage('Build') {
+            steps {
+                sh 'mvn clean package'
+            }
+        }
+     }
+
+     post {
+        success {
+            slackSend(channel"$SLACK_CHANNEL", message: "Success: $INSTITUE_NAME Build #${env.BUILD_NUMBER}")
+
+        }
+        failure {
+            slackSend(channel: "$SLACK_CHANNEL", message: "FAILURE: $INSTITUTE_NAME Build #${env.BUILD_NUMBER}")
+        }
+     }
+}   
+
+
+
+stages:
+ - build 
+
+variables: 
+ INSTITUE_NAME: "Pathnex"
+ SLACK_WEBHOOOK: "https://hooks.slack.com/services/XXXXX/YYYYY/ZZZZZ"
+
+
+build:
+ stage: build
+ image: maven:3.8.1-jdk-17
+ script: 
+  - git clone https://githib.com/Pathnex/sample-java-app.git
+  - cd sample-java-app
+  - mvn clean package 
+  - curl _X POST_H "Content-type: application/json --data '{"text":"Build success for Pathnex"}' $SLACK_WEBHOOK
