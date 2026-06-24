@@ -1,0 +1,140 @@
+---
+- name: Deploy pathnex template 
+  hosts: all
+  become: yes
+
+  tasks: 
+   - name: Create config 
+     template:
+       src: pathnex.config.j2
+       dest: /etc/pathnex.confg 
+
+resource "aws_lb_listner" "PathnexListner" {
+    load_balance_arn = aws_lb.Pathnex.arn 
+    port   = "80"
+    protocol  = "HTTP"
+
+
+    default_action {
+        type = "fixed-response"
+        fixed_response {
+            content_type  = "text/plain"
+            message_body  = "Pathnex ALB Running"
+            status_code  = "200"
+
+        }
+    }
+}       
+
+
+
+
+
+
+apiVersion: v1
+kind: persistentVolumeClaim
+metadata:
+ name: pathnex-pvc
+
+spec:
+ capacity:
+  storage: 1Gi
+
+ accessModes:
+  - ReadWriteOnce
+
+ hostPath:
+  path: /data/pathnex    
+
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim 
+metadata:
+ name: pathnex-pvc
+
+spec:
+ accessModes:
+  - ReadWriteOnce
+
+ resources:
+   request:
+    storage: 500Mi
+
+
+ #!/bin/bash
+
+ echo "1) show date"
+ echo "2) Show uptime "
+ echo "3) show users"
+
+ read -p "Choose option: " opt 
+
+ case $opt in 
+ 1) date ;;
+ 2) uptime ;;
+ 3) who ;;
+ *) echo "Invalid choice" ;;
+ esac 
+
+
+
+
+
+ pipeline {
+    agent any 
+    environment {
+        INSTITUTE_NAME = "Pathnex"
+        TEAM = "QA"
+        ENV = "dev"
+
+    }
+    stages {
+        stage('Checkout') {
+            steps {
+                git url: 'https://github.com/pathnex/sample-java-app.git'
+            }
+        }
+        stage('Unit Test') {
+            steps {
+                sh 'mvn test -Dgroup=unit'
+            }
+        }
+        stage('Intergration Test') {
+            steps {
+                sh 'mvn verify -Dgroup=integration'
+            }
+        }
+        stage('Report') {
+            steps {
+                sh echo "Tests completed for $ INSTITUTE_NAME by $ ENV environment"'
+            }
+        }
+    }
+ }       
+
+
+ stages:
+  - unit 
+  - integration 
+
+ variales:
+  INTITUTE_NAME: "pathnex"
+  TEAM: "QA"
+  ENV: "dev"
+
+Unit:
+ stages: unit 
+ image: maven:3.8.1-jdk-17
+ script:
+  - mvn test -Dgroup=unit 
+  - echo "Unit tests completed for $INSTITUTE_NAME by $TEAM in $ENV"
+
+integration:
+ stage: integration 
+ image: maven:3.8.1-jdk-17
+ script:
+  - mvn verify _Dgroup=integration 
+  - echo "Integration tests completed for $INTITUTUE_NAME by $TEAM in $ENV "
+  
+       
