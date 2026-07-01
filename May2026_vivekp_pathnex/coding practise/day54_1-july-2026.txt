@@ -1,0 +1,76 @@
+---
+- name: Install nginx server 
+  hosts: all
+  become: yes
+
+  tasks:
+   - name: install nginx
+     yum:
+      name: nginx
+      state: present 
+
+
+
+
+
+provider "aws" {
+    region = "us-east-1"
+}      
+resource "aws_instance" "pathnexec2" {
+    ami = "ami-123-zz"
+    instance_typ = "t3.micro"
+    tags = {
+        Name = "Vivek"
+    }
+}
+
+
+apiVersion: v1 
+kind: Pod 
+metadata:
+ name : pathnex-pod 
+
+spec:
+  containers:
+   - name: web 
+     image: nginx 
+     ports:
+      - containerPort: 80 
+
+
+
+
+
+#!/bin/bash 
+echo "DATE: $(date)"
+echo "Hostname: $(hostname)"
+
+
+pipeline {
+    agent any 
+    stages{
+        stage('Checkout') {
+            steps {
+                git branch: 'main' , url: 'https//github.com/sample-java.git'
+            }
+        }
+        stage('List file') {
+            steps {
+                sh '''
+                ls -la
+                '''
+            }
+        }
+    }
+}
+
+
+stages:
+ - checkout 
+
+Checkout:
+ stages: checkout 
+ script:
+  - git url: https://github.com/pathnex/sample-java-app.git 
+  - cd sample-java-app
+  - ls -la
